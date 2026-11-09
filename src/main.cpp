@@ -25,14 +25,14 @@ bool converterDouble(const std::string& texto, double& valor) {
     std::istringstream entrada(texto);
     entrada >> valor;
     entrada >> std::ws;
-    return !entrada.fail() && entrada.eof() && std::isfinite(valor);
+    return entrada.eof() && std::isfinite(valor);
 }
 
 bool converterInteiro(const std::string& texto, int& valor) {
     std::istringstream entrada(texto);
     entrada >> valor;
     entrada >> std::ws;
-    return !entrada.fail() && entrada.eof();
+    return entrada.eof();
 }
 
 std::string lerTexto(const std::string& mensagem) {
