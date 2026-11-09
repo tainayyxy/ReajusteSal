@@ -23,14 +23,14 @@ double calcularPercentualReajuste(int anosDeEmpresa) {
 
 bool converterDouble(const std::string& texto, double& valor) {
     std::istringstream entrada(texto);
-    entrada >> valor;
+    if (!(entrada >> valor)) return false;
     entrada >> std::ws;
     return entrada.eof() && std::isfinite(valor);
 }
 
 bool converterInteiro(const std::string& texto, int& valor) {
     std::istringstream entrada(texto);
-    entrada >> valor;
+    if (!(entrada >> valor)) return false;
     entrada >> std::ws;
     return entrada.eof();
 }
