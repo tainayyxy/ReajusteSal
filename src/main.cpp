@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -15,14 +16,8 @@ constexpr double DESCONTO_DIDATICO = 0.08;
 constexpr double LIMITE_SALARIO_DESTAQUE = 10000.00;
 
 double calcularPercentualReajuste(int anosDeEmpresa) {
-    if (anosDeEmpresa < 1) {
-        return 0.05;
-    }
-
-    if (anosDeEmpresa < 5) {
-        return 0.10;
-    }
-
+    if (anosDeEmpresa < 1) return 0.05;
+    if (anosDeEmpresa < 5) return 0.10;
     return 0.15;
 }
 
@@ -30,7 +25,6 @@ bool converterDouble(const std::string& texto, double& valor) {
     std::istringstream entrada(texto);
     entrada >> valor;
     entrada >> std::ws;
-
     return !entrada.fail() && entrada.eof() && std::isfinite(valor);
 }
 
@@ -38,7 +32,6 @@ bool converterInteiro(const std::string& texto, int& valor) {
     std::istringstream entrada(texto);
     entrada >> valor;
     entrada >> std::ws;
-
     return !entrada.fail() && entrada.eof();
 }
 
@@ -47,17 +40,12 @@ std::string lerTexto(const std::string& mensagem) {
 
     while (true) {
         std::cout << mensagem;
-        if (!std::getline(std::cin, texto)) {
-            return "";
-        }
+        if (!std::getline(std::cin, texto)) return "";
 
-        const auto primeiroCaractere = texto.find_first_not_of(" \t\r\n");
-        if (primeiroCaractere != std::string::npos) {
-            const auto ultimoCaractere = texto.find_last_not_of(" \t\r\n");
-            return texto.substr(
-                primeiroCaractere,
-                ultimoCaractere - primeiroCaractere + 1
-            );
+        const auto primeiro = texto.find_first_not_of(" \t\r\n");
+        if (primeiro != std::string::npos) {
+            const auto ultimo = texto.find_last_not_of(" \t\r\n");
+            return texto.substr(primeiro, ultimo - primeiro + 1);
         }
 
         std::cout << "O campo nao pode ficar vazio. Tente novamente.\n";
@@ -70,14 +58,9 @@ double lerSalario() {
 
     while (true) {
         std::cout << "Salario atual (use ponto para casas decimais): R$ ";
-        if (!std::getline(std::cin, texto)) {
-            return -1.0;
-        }
+        if (!std::getline(std::cin, texto)) return -1.0;
 
-        if (converterDouble(texto, salario) && salario >= 0.0) {
-            return salario;
-        }
-
+        if (converterDouble(texto, salario) && salario >= 0.0) return salario;
         std::cout << "Valor invalido. Informe um salario numerico maior ou igual a zero.\n";
     }
 }
@@ -88,14 +71,9 @@ int lerTempoDeEmpresa() {
 
     while (true) {
         std::cout << "Tempo de empresa (anos completos): ";
-        if (!std::getline(std::cin, texto)) {
-            return -1;
-        }
+        if (!std::getline(std::cin, texto)) return -1;
 
-        if (converterInteiro(texto, anos) && anos >= 0) {
-            return anos;
-        }
-
+        if (converterInteiro(texto, anos) && anos >= 0) return anos;
         std::cout << "Valor invalido. Informe um numero inteiro maior ou igual a zero.\n";
     }
 }
@@ -109,8 +87,7 @@ Funcionario lerFuncionario() {
 }
 
 void exibirResultado(const Funcionario& funcionario) {
-    const double percentual =
-        calcularPercentualReajuste(funcionario.anosDeEmpresa);
+    const double percentual = calcularPercentualReajuste(funcionario.anosDeEmpresa);
     const double aumento = funcionario.salarioAtual * percentual;
     const double novoSalario = funcionario.salarioAtual + aumento;
     const double desconto = novoSalario * DESCONTO_DIDATICO;
@@ -119,13 +96,11 @@ void exibirResultado(const Funcionario& funcionario) {
     std::cout << std::fixed << std::setprecision(2);
     std::cout << "\n========== RESULTADO DO REAJUSTE ==========\n";
     std::cout << "Funcionario: " << funcionario.nome << '\n';
-    std::cout << "Tempo de empresa: " << funcionario.anosDeEmpresa
-              << " ano(s)\n";
+    std::cout << "Tempo de empresa: " << funcionario.anosDeEmpresa << " ano(s)\n";
     std::cout << "Salario anterior: R$ " << funcionario.salarioAtual << '\n';
     std::cout << "Percentual aplicado: " << percentual * 100.0 << "%\n";
     std::cout << "Valor do aumento: R$ " << aumento << '\n';
-    std::cout << "Novo salario (antes do desconto): R$ "
-              << novoSalario << '\n';
+    std::cout << "Novo salario (antes do desconto): R$ " << novoSalario << '\n';
     std::cout << "Desconto didatico (8%): R$ " << desconto << '\n';
     std::cout << "Salario final estimado: R$ " << salarioFinal << '\n';
 
@@ -137,32 +112,21 @@ void exibirResultado(const Funcionario& funcionario) {
 }
 
 std::string normalizarResposta(std::string resposta) {
-    std::transform(
-        resposta.begin(),
-        resposta.end(),
-        resposta.begin(),
-        [](unsigned char caractere) {
-            return static_cast<char>(std::tolower(caractere));
-        }
-    );
-
+    std::transform(resposta.begin(), resposta.end(), resposta.begin(),
+                   [](unsigned char caractere) {
+                       return static_cast<char>(std::tolower(caractere));
+                   });
     return resposta;
 }
 
 bool desejaContinuar() {
     while (true) {
-        std::string resposta = lerTexto(
-            "\nDeseja calcular outro funcionario? (sim/nao): "
+        std::string resposta = normalizarResposta(
+            lerTexto("\nDeseja calcular outro funcionario? (sim/nao): ")
         );
-        resposta = normalizarResposta(resposta);
 
-        if (resposta == "sim") {
-            return true;
-        }
-
-        if (resposta == "nao" || resposta == "não") {
-            return false;
-        }
+        if (resposta == "sim") return true;
+        if (resposta == "nao" || resposta == "não") return false;
 
         std::cout << "Resposta invalida. Digite sim ou nao.\n";
     }
