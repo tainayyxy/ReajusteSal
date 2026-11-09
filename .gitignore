@@ -1,0 +1,20 @@
+# Executaveis
+/ReajusteSal
+/ReajusteSal.exe
+*.out
+*.o
+*.obj
+
+# Diretorios de build
+/build/
+/bin/
+
+# IDEs e editores
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
